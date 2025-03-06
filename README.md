@@ -17,5 +17,5 @@ Os dados foram coletados do sítio da Polícia Rodoviária Federal.
 >
 https://www.gov.br/prf/pt-br/acesso-a-informacao/dados-abertos/dados-abertos-acidentes
 >
-Dataset: Agrupado por pessoa, 2019 e 2020
+Dataset: Agrupado por ocorrência
 <br><br>
