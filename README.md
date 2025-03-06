@@ -10,7 +10,7 @@ O Brasil é o terceiro país com mais mortes no trânsito, ficando atrás apenas
 
 Cerca de 82% dos acidentes de trânsito nas rodovias federais brasileiras, são com vítimas, tendo em vista esse grande percentual de vítimas, nesse estudo, queremos entender os fatores que contribuem para os acidentes acontecerem.
 
-# 2. Coleta de Dados
+# :floppy_disk: Coleta de Dados
 >
 Os dados foram coletados do sítio da Polícia Rodoviária Federal.
 <img align="left" width="80" height="94" src="https://github.com/gabrielmprata/MVP_Sprint01_Puc_Rio/assets/119508139/f9646e84-d274-406b-9a7a-12add19acb07">
