@@ -46,5 +46,7 @@ Principais técnicas utilizadas:
 >
 **Tratamendo de dados faltantes (missing):** Identificamos e, em seguida, tratamos com um valor adequado. Não foi necessario a exclusão desses registros.
 >
-# **<font color=#85d338> 4. Apresentação dos resultados**
+# :chart_with_downwards_trend: Apresentação dos resultados
+>
+[![Colab Notebook](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/gabrielmprata/acidentes_transito/blob/main/Acidentes_Rodoviarios_PreProc.ipynb)
 >
