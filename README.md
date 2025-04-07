@@ -29,7 +29,7 @@ Infrações
 >
 # :recycle: Pré-processamento
 >
-[![Colab Notebook](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/gabrielmprata/anatel/blob/main/Anatel_PreProcessamento.ipynb)
+[![Colab Notebook](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/gabrielmprata/acidentes_transito/blob/main/Acidentes_Rodoviarios_PreProc.ipynb)
 >
 Esta é a etapa mais demorada e trabalhosa do projeto de ciência de dados, e estima-se que consuma pelo menos 70% do tempo total do projeto.
 >
