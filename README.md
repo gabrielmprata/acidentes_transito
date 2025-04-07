@@ -48,5 +48,5 @@ Principais técnicas utilizadas:
 >
 # :chart_with_downwards_trend: Apresentação dos resultados
 >
-[![Colab Notebook](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/gabrielmprata/acidentes_transito/blob/main/Acidentes_Rodoviarios_PreProc.ipynb)
+[![Colab Notebook](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/gabrielmprata/acidentes_transito/blob/main/Acidentes_Rodoviarios_DataViz.ipynb)
 >
