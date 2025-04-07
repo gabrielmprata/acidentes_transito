@@ -27,7 +27,7 @@ Infrações
 
 <br></br>
 >
-# **<font color=#85d338> 3. Pré-processamento**
+# :recycle: Pré-processamento
 >
 [![Colab Notebook](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/gabrielmprata/anatel/blob/main/Anatel_PreProcessamento.ipynb)
 >
