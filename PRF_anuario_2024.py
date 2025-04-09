@@ -121,7 +121,14 @@ gr_hs_anual_dif.update_xaxes(type="category", title=None)
 
 
 st.markdown(
-    ":warning::ambulance: Acidentes de Trânsito nas Rodovias Federais Brasileiras :red_car::police_car:")
+    " # :warning::ambulance: Acidentes de Trânsito nas Rodovias Federais Brasileiras :red_car::police_car:")
+
+st.markdown("<h1 style='text-align: center; color: blue;'>Anuário 2024</h1>",
+            unsafe_allow_html=True)
+
+st.markdown("##")
+st.markdown(
+    "### :blue[Sinistros de Trânsito no Brasil, comparativo e série histórica]")
 
 
 style_metric_cards(background_color="#071021",
