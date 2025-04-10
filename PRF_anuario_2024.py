@@ -54,8 +54,38 @@ df_pessoas = pd.read_csv(url4, compression='bz2',
 # ----------------------------------------------------------------------------#
 # ****************************************************************************#
 # Construção dos Datasets
-# 3.1.1
+# 3.1.1 Quadro comparativo
+# agrupa por ano
+df_ind_anual = df_hs_acidentes.groupby('ano')[['sinistro', 'pessoas', 'mortos', 'feridos_leves',
+                                               'feridos_graves', 'ilesos', 'ignorados', 'veiculos']].apply(lambda x: x.sum()).reset_index()
 
+sinistro_atual = df_ind_anual.sinistro.values[1]
+sinistro_ant = df_ind_anual.sinistro.values[0]
+sinistro_delta = sinistro_atual - sinistro_ant
+
+veiculos_atual = df_ind_anual.veiculos.values[1]
+veiculos_ant = df_ind_anual.veiculos.values[0]
+veiculos_delta = veiculos_atual - veiculos_ant
+
+pessoas_atual = df_ind_anual.pessoas.values[1]
+pessoas_ant = df_ind_anual.pessoas.values[0]
+pessoas_delta = pessoas_atual - pessoas_ant
+
+feridos_leves_atual = df_ind_anual.feridos_leves.values[1]
+feridos_leves_ant = df_ind_anual.feridos_leves.values[0]
+feridos_leves_delta = feridos_leves_atual - feridos_leves_ant
+
+feridos_graves_atual = df_ind_anual.feridos_graves.values[1]
+feridos_graves_ant = df_ind_anual.feridos_graves.values[0]
+feridos_graves_delta = feridos_graves_atual - feridos_graves_ant
+
+mortos_atual = df_ind_anual.mortos.values[1]
+mortos_ant = df_ind_anual.mortos.values[0]
+mortos_delta = mortos_atual - mortos_ant
+
+ilesos_atual = df_ind_anual.ilesos.values[1]
+ilesos_ant = df_ind_anual.ilesos.values[0]
+ilesos_delta = ilesos_atual - ilesos_ant
 
 # 3.1.2 Série histórica, 2007-2024
 # Criar métrica com o valor do ano anterior
@@ -83,7 +113,7 @@ df_hs_anual['mortos'] = (df_hs_anual['mortos']/1000).round(1)
 # ****************************************************************************#
 # Construção dos Gráficos
 
-# 1. Avaliação InBody ATUAL
+# 1. Quadro comparativo
 # todos os cards foram feitos com st.metric direto no Main Panel
 
 # ----------------------------------------------------------------------------#
@@ -134,7 +164,29 @@ style_metric_cards(background_color="#071021",
 text = """:orange[**Quadro Comparativo, 2023-2024**]"""
 
 with st.expander(text, expanded=True):
-    st.markdown("##")
+    col = st.columns((1.1, 1.1, 1.1, 1.1), gap='medium')
+
+    with col[0]:
+        #######################
+        # Quadro com o total e a variação
+        st.markdown('### Sinistros')
+        st.metric(label="", value=str(
+            (sinistro_atual).round(2)), delta=str(sinistro_delta))
+
+    with col[1]:
+        st.markdown('### Veículos')
+        st.metric(label="", value=str(
+            veiculos_atual), delta=str(veiculos_delta))
+
+    with col[2]:
+        st.markdown('### Pessoas')
+        st.metric(delta_color="inverse", label="", value=str(
+            pessoas_atual), delta=str(pessoas_delta))
+
+    with col[3]:
+        st.markdown('### Ilesos')
+        st.metric(delta_color="inverse", label="", value=str(
+            ilesos_atual), delta=str(ilesos_delta))
 
 
 text = """:orange[**Série histórica, 2007-2024**]"""
