@@ -123,10 +123,7 @@ gr_hs_anual_dif.update_xaxes(type="category", title=None)
 st.markdown(
     " # :warning::ambulance: Acidentes de Trânsito nas Rodovias Federais Brasileiras :red_car::police_car:")
 
-st.markdown("<h1 style='text-align: center; color: blue;'>Anuário 2024</h1>",
-            unsafe_allow_html=True)
 
-st.markdown("##")
 st.markdown(
     "### :blue[Sinistros de Trânsito no Brasil, comparativo e série histórica]")
 
@@ -134,8 +131,20 @@ st.markdown(
 style_metric_cards(background_color="#071021",
                    border_left_color="#1f66bd", border_radius_px=5)
 
+text = """:orange[**Quadro Comparativo, 2023-2024**]"""
+
+with st.expander(text, expanded=True):
+    st.markdown("##")
+
+
 text = """:orange[**Série histórica, 2007-2024**]"""
 
 with st.expander(text, expanded=True):
     st.plotly_chart(gr_hs_anual, use_container_width=True)
     st.plotly_chart(gr_hs_anual_dif, use_container_width=True)
+
+
+st.markdown("<h1 style='text-align: center; color: blue;'>Anuário 2024</h1>",
+            unsafe_allow_html=True)
+
+st.markdown("##")
