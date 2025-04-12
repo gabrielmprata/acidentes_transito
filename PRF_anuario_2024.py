@@ -63,15 +63,13 @@ sinistro_atual = (df_ind_anual.sinistro.values[1]/1000).round(1)
 sinistro_ant = (df_ind_anual.sinistro.values[0]/1000).round(1)
 sinistro_delta = (sinistro_atual - sinistro_ant).round(1)
 
-# sinistro_atual = (sinistro_atual/1000).round(1)
+veiculos_atual = (df_ind_anual.veiculos.values[1]/1000).round(1)
+veiculos_ant = (df_ind_anual.veiculos.values[0]/1000).round(1)
+veiculos_delta = (veiculos_atual - veiculos_ant).round(1)
 
-veiculos_atual = df_ind_anual.veiculos.values[1]
-veiculos_ant = df_ind_anual.veiculos.values[0]
-veiculos_delta = veiculos_atual - veiculos_ant
-
-pessoas_atual = df_ind_anual.pessoas.values[1]
-pessoas_ant = df_ind_anual.pessoas.values[0]
-pessoas_delta = pessoas_atual - pessoas_ant
+pessoas_atual = (df_ind_anual.pessoas.values[1]/1000).round(1)
+pessoas_ant = (df_ind_anual.pessoas.values[0]/1000).round(1)
+pessoas_delta = (pessoas_atual - pessoas_ant).round(1)
 
 feridos_leves_atual = df_ind_anual.feridos_leves.values[1]
 feridos_leves_ant = df_ind_anual.feridos_leves.values[0]
@@ -177,18 +175,18 @@ with st.expander(text, expanded=True):
 
     with col[1]:
         st.markdown('### Veículos')
-        st.metric(label="", value=str(
-            veiculos_atual), delta=str(veiculos_delta))
+        st.metric(delta_color="inverse", label="", value=str(
+            veiculos_atual)+" k", delta=str(veiculos_delta)+" k")
 
     with col[2]:
         st.markdown('### Pessoas')
         st.metric(delta_color="inverse", label="", value=str(
-            pessoas_atual), delta=str(pessoas_delta))
+            pessoas_atual)+" k", delta=str(pessoas_delta)+" k")
 
     with col[3]:
         st.markdown('### Ilesos')
-        st.metric(delta_color="inverse", label="", value=str(
-            ilesos_atual)+" k", delta=str(ilesos_delta))
+        st.metric(label="", value=str(
+            ilesos_atual)+" k", delta=str(ilesos_delta)+" k")
 
 
 text = """:orange[**Série histórica, 2007-2024**]"""
