@@ -116,6 +116,31 @@ df_hs_anual['mortos'] = (df_hs_anual['mortos']/1000).round(1)
 df_sin_mes = df_acidentes.groupby(['mes', 'mes_char'])[
     'sinistro'].sum().reset_index()
 
+# 3.2.2 Óbitos por mês
+df_mor_mes = df_acidentes.groupby(['mes', 'mes_char'])[
+    'mortos'].sum().reset_index()
+
+# 3.2.3 Sinistros por dia da semana, horário e fase do dia
+# Dataframe agrupando por dia da semana
+df_semana = df_acidentes.groupby(['semana', 'dia_semana'])[
+    'sinistro'].sum().reset_index()
+
+# Dataframe agrupando por dia da semana e hora
+df_hora_semana = df_acidentes.groupby(['semana', 'dia_semana', 'hora'])[
+    'sinistro'].sum().reset_index()
+
+# Dataframe agrupando por dia da semana e hora
+df_fase_dia = df_acidentes.groupby(
+    ['fase_dia'])['sinistro'].sum().reset_index()
+
+# classificar fase do dia
+# recebe o dia da semana em numeral, para depois poder ordenar de maneira correta
+df_fase_dia["ordem"] = df_fase_dia["fase_dia"]
+dicwk = {"Amanhecer": 0, "Pleno dia": 1, "Anoitecer": 2, "Plena Noite": 3}
+df_fase_dia = df_fase_dia.replace({'ordem': dicwk})
+
+# Ordenar
+df_fase_dia = df_fase_dia.sort_values(by='ordem', ascending=True)
 
 # ----------------------------------------------------------------------------#
 # ****************************************************************************#
@@ -181,6 +206,46 @@ gr_an_mes = px.line(df_sin_mes, x='mes_char', y=['sinistro'],
 gr_an_mes.update_xaxes(type="category", title=None)
 gr_an_mes.update_layout(showlegend=False)
 gr_an_mes.update_traces(line_width=2, textposition='top center')
+
+# 3.2.2 Óbitos por mês
+gr_an_obito_mes = px.line(df_mor_mes, x='mes_char', y=['mortos'],
+                          markers=True, text='value', line_shape="spline", template="plotly_dark",
+                          render_mode="svg",
+                          labels=dict(mes_char="Mês",
+                                      value="Óbitos", variable="Óbitos")
+                          )
+# se o type for date, vai respeitar o intervalo
+gr_an_obito_mes.update_xaxes(type="category", title=None)
+gr_an_obito_mes.update_layout(showlegend=False)
+gr_an_obito_mes.update_traces(
+    line_width=2, textposition='top center', line_color='red')
+
+# 3.2.3 Sinistros por dia da semana, horário e fase do dia
+gr_an_semana = px.bar(df_semana, x="dia_semana", y="sinistro",
+                      labels=dict(dia_semana="Dia da semana",
+                                  sinistro="Sinistros"),
+                      height=350, width=600,  # altura x largura
+                      color_discrete_sequence=px.colors.sequential.Blues_r,  text_auto='.2s',
+                      template="plotly_dark"
+                      )
+
+gr_an_fase_dia = px.bar(df_fase_dia, x="fase_dia", y="sinistro",
+                        labels=dict(fase_dia="Fase do dia",
+                                    sinistro="Sinistros"),
+                        height=350, width=600,  # altura x largura
+                        color_discrete_sequence=px.colors.sequential.Blues_r,  text_auto='.2s',
+                        template="plotly_dark"
+                        )
+
+gr_an_hora_semana = px.density_heatmap(df_hora_semana, x="dia_semana", y="hora", z="sinistro",
+                                       histfunc="sum", text_auto=True,
+                                       labels=dict(
+                                           dia_semana="Dia da semana",  hora="Hora"),
+                                       color_continuous_scale="RdYlBu_r", template="plotly_dark"
+                                       )
+gr_an_hora_semana.layout['coloraxis']['colorbar']['title'] = 'Sinistros'
+gr_an_hora_semana.update_yaxes(type="category")
+gr_an_hora_semana.update_xaxes(type="category")
 
 #######################
 # Dashboard Main Panel
@@ -256,3 +321,21 @@ text = """:orange[**Sinistros por mês**]"""
 
 with st.expander(text, expanded=True):
     st.plotly_chart(gr_an_mes, use_container_width=True)
+
+text = """:orange[**Óbitos por mês**]"""
+
+with st.expander(text, expanded=True):
+    st.plotly_chart(gr_an_obito_mes, use_container_width=True)
+
+text = """:orange[**Sinistros por dia da semana, horário e fase do dia**]"""
+
+with st.expander(text, expanded=True):
+    col = st.columns((3.1, 4.1), gap='medium')
+
+    with col[0]:
+        st.plotly_chart(gr_an_semana, use_container_width=True)
+
+    with col[1]:
+        st.plotly_chart(gr_an_fase_dia, use_container_width=True)
+
+    st.plotly_chart(gr_an_hora_semana, use_container_width=True)
