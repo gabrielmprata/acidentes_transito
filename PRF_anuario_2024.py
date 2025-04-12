@@ -142,6 +142,22 @@ df_fase_dia = df_fase_dia.replace({'ordem': dicwk})
 # Ordenar
 df_fase_dia = df_fase_dia.sort_values(by='ordem', ascending=True)
 
+# 3.2.4 Sinistros por unidade federativa e região
+# Dataframe agrupando por uf e região  para usar com o mapa do Streamlit
+df_uf_regiao_hist = df_acidentes.groupby(["ano", "uf", "regiao"])[
+    'sinistro'].sum().reset_index()
+
+# Carga do Json com as limitações dos estados brasileiros
+with urlopen('https://raw.githubusercontent.com/codeforamerica/click_that_hood/master/public/data/brazil-states.geojson') as response:
+    Brasil = json.load(response)
+
+# definindo a informação do gráfico
+state_id_map = {}
+for feature in Brasil["features"]:
+    feature["id"] = feature["properties"]["sigla"]
+    state_id_map[feature["properties"]["sigla"]] = feature["id"]
+
+
 # ----------------------------------------------------------------------------#
 # ****************************************************************************#
 # Construção dos Gráficos
@@ -247,6 +263,34 @@ gr_an_hora_semana.layout['coloraxis']['colorbar']['title'] = 'Sinistros'
 gr_an_hora_semana.update_yaxes(type="category")
 gr_an_hora_semana.update_xaxes(type="category")
 
+
+# 3.2.4 Sinistros por unidade federativa e região
+# Plotando o mapa
+gr_an_mapa = px.choropleth_mapbox(
+    df_uf_regiao_hist,  # database
+    locations='uf',  # define os limites no mapa
+    geojson=Brasil,  # Coordenadas geograficas dos estados
+    color="sinistro",  # define a metrica para a cor da escala
+    hover_name='uf',  # informação no box do mapa
+    hover_data=["uf"],
+    labels=dict(uf="UF", sinistro="Sinistros"),
+    mapbox_style="white-bg",  # define o style do mapa
+    center={"lat": -14, "lon": -55},  # define os limites para plotar
+    zoom=2.5,  # zoom inicial no mapa
+    color_continuous_scale="blues",  # cor dos estados
+    opacity=0.5  # opacidade da cor do mapa, para aparecer o fundo
+)
+gr_an_mapa.update_layout(plot_bgcolor='rgba(0, 0, 0, 0)',
+                         coloraxis_showscale=True,  # Tira a legenda
+                         margin=dict(l=0, r=0, t=0, b=0), height=350
+                         )
+
+gr_an_regiao = px.pie(df_uf_regiao_hist, values='sinistro', names='regiao', labels=dict(regiao="Região", sinistro="Sinistros"),
+                      height=350, width=350, color_discrete_sequence=px.colors.sequential.Blues_r, template="plotly_dark"
+                      )
+gr_an_regiao.update_layout(showlegend=False)
+gr_an_regiao.update_traces(textposition='outside', textinfo='percent+label')
+
 #######################
 # Dashboard Main Panel
 
@@ -330,7 +374,7 @@ with st.expander(text, expanded=True):
 text = """:orange[**Sinistros por dia da semana, horário e fase do dia**]"""
 
 with st.expander(text, expanded=True):
-    col = st.columns((3.1, 4.1), gap='medium')
+    col = st.columns((5.1, 2.1), gap='medium')
 
     with col[0]:
         st.plotly_chart(gr_an_semana, use_container_width=True)
@@ -339,3 +383,14 @@ with st.expander(text, expanded=True):
         st.plotly_chart(gr_an_fase_dia, use_container_width=True)
 
     st.plotly_chart(gr_an_hora_semana, use_container_width=True)
+
+text = """:orange[**Sinistros por unidade federativa e região**]"""
+
+with st.expander(text, expanded=True):
+    col = st.columns((4.1, 3.1), gap='medium')
+
+    with col[0]:
+        st.plotly_chart(gr_an_mapa, use_container_width=True)
+
+    with col[1]:
+        st.plotly_chart(gr_an_regiao, use_container_width=True)
