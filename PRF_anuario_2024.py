@@ -59,9 +59,11 @@ df_pessoas = pd.read_csv(url4, compression='bz2',
 df_ind_anual = df_hs_acidentes.groupby('ano')[['sinistro', 'pessoas', 'mortos', 'feridos_leves',
                                                'feridos_graves', 'ilesos', 'ignorados', 'veiculos']].apply(lambda x: x.sum()).reset_index()
 
-sinistro_atual = df_ind_anual.sinistro.values[1]
-sinistro_ant = df_ind_anual.sinistro.values[0]
-sinistro_delta = sinistro_atual - sinistro_ant
+sinistro_atual = (df_ind_anual.sinistro.values[1]/1000).round(1)
+sinistro_ant = (df_ind_anual.sinistro.values[0]/1000).round(1)
+sinistro_delta = (sinistro_atual - sinistro_ant).round(1)
+
+# sinistro_atual = (sinistro_atual/1000).round(1)
 
 veiculos_atual = df_ind_anual.veiculos.values[1]
 veiculos_ant = df_ind_anual.veiculos.values[0]
@@ -170,8 +172,8 @@ with st.expander(text, expanded=True):
         #######################
         # Quadro com o total e a variação
         st.markdown('### Sinistros')
-        st.metric(label="", value=str(
-            (sinistro_atual).round(2)), delta=str(sinistro_delta))
+        st.metric(delta_color="inverse", label="", value=str(
+            sinistro_atual)+" k", delta=str(sinistro_delta)+" k")
 
     with col[1]:
         st.markdown('### Veículos')
@@ -186,7 +188,7 @@ with st.expander(text, expanded=True):
     with col[3]:
         st.markdown('### Ilesos')
         st.metric(delta_color="inverse", label="", value=str(
-            ilesos_atual), delta=str(ilesos_delta))
+            ilesos_atual)+" k", delta=str(ilesos_delta))
 
 
 text = """:orange[**Série histórica, 2007-2024**]"""
