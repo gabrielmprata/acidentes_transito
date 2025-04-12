@@ -145,6 +145,22 @@ gr_hs_anual_dif.update_xaxes(showgrid=False, visible=False, fixedrange=True)
 # se o type for date, vai respeitar o intervalo
 gr_hs_anual_dif.update_xaxes(type="category", title=None)
 
+# Estado das vítimas por ano
+
+gr_hs_vitimas = px.line(df_hs_anual, x='ano', y=['feridos_leves', 'mortos', 'feridos_graves'],
+                        markers=True, text='value',
+                        # height=600, width=800, #altura x largura
+                        line_shape="spline",
+                        template="plotly_dark",
+                        render_mode="svg",
+                        title="Estado das vítimas por Ano",
+                        labels=dict(ano="Ano", value="Envolvidos(k)",
+                                    variable="Envolvidos")
+                        )
+# se o type for date, vai respeitar o intervalo
+gr_hs_vitimas.update_xaxes(type="category", title=None)
+gr_hs_vitimas.update_traces(line_width=2, textposition='top center')
+
 
 #######################
 # Dashboard Main Panel
@@ -209,6 +225,7 @@ text = """:orange[**Série histórica, 2007-2024**]"""
 with st.expander(text, expanded=True):
     st.plotly_chart(gr_hs_anual, use_container_width=True)
     st.plotly_chart(gr_hs_anual_dif, use_container_width=True)
+    st.plotly_chart(gr_hs_vitimas, use_container_width=True)
 
 
 st.markdown("<h1 style='text-align: center; color: blue;'>Anuário 2024</h1>",
