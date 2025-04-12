@@ -157,6 +157,10 @@ for feature in Brasil["features"]:
     feature["id"] = feature["properties"]["sigla"]
     state_id_map[feature["properties"]["sigla"]] = feature["id"]
 
+# 3.2.5 Óbitos por unidade federativa e região
+df_uf_regiao_mortos = df_acidentes.groupby(["ano", "uf", "regiao"])[
+    'mortos'].sum().reset_index()
+
 
 # ----------------------------------------------------------------------------#
 # ****************************************************************************#
@@ -254,7 +258,7 @@ gr_an_fase_dia = px.bar(df_fase_dia, x="fase_dia", y="sinistro",
                         )
 
 gr_an_hora_semana = px.density_heatmap(df_hora_semana, x="dia_semana", y="hora", z="sinistro",
-                                       histfunc="sum", text_auto=True,
+                                       histfunc="sum", text_auto=True, height=500,
                                        labels=dict(
                                            dia_semana="Dia da semana",  hora="Hora"),
                                        color_continuous_scale="RdYlBu_r", template="plotly_dark"
@@ -290,6 +294,37 @@ gr_an_regiao = px.pie(df_uf_regiao_hist, values='sinistro', names='regiao', labe
                       )
 gr_an_regiao.update_layout(showlegend=False)
 gr_an_regiao.update_traces(textposition='outside', textinfo='percent+label')
+
+# 3.2.5 Óbitos por unidade federativa e região
+# Plotando o mapa
+gr_an_mapa_ob = px.choropleth_mapbox(
+    df_uf_regiao_mortos,  # database
+    locations='uf',  # define os limites no mapa
+    geojson=Brasil,  # Coordenadas geograficas dos estados
+    color="mortos",  # define a metrica para a cor da escala
+    hover_name='uf',  # informação no box do mapa
+    hover_data=["uf"],
+    labels=dict(uf="UF", mortos="Mortos"),
+    mapbox_style="white-bg",  # define o style do mapa
+    center={"lat": -14, "lon": -55},  # define os limites para plotar
+    zoom=2.5,  # zoom inicial no mapa
+    color_continuous_scale="RdYlBu_r",  # cor dos estados
+
+    opacity=0.5  # opacidade da cor do mapa, para aparecer o fundo
+
+)
+gr_an_mapa_ob.update_layout(
+    plot_bgcolor='rgba(0, 0, 0, 0)',
+    coloraxis_showscale=True,  # Tira a legenda
+    margin=dict(l=0, r=0, t=0, b=0),
+    height=350
+)
+
+gr_an_regiao_ob = px.pie(df_uf_regiao_mortos, values='mortos', names='regiao', labels=dict(regiao="Região", sinistro="Mortos"),
+                         height=350, width=350, color_discrete_sequence=px.colors.sequential.Blues_r, template="plotly_dark"
+                         )
+gr_an_regiao_ob.update_layout(showlegend=False)
+gr_an_regiao_ob.update_traces(textposition='outside', textinfo='percent+label')
 
 #######################
 # Dashboard Main Panel
@@ -394,3 +429,14 @@ with st.expander(text, expanded=True):
 
     with col[1]:
         st.plotly_chart(gr_an_regiao, use_container_width=True)
+
+text = """:orange[**Óbitos por unidade federativa e região**]"""
+
+with st.expander(text, expanded=True):
+    col = st.columns((4.1, 3.1), gap='medium')
+
+    with col[0]:
+        st.plotly_chart(gr_an_mapa_ob, use_container_width=True)
+
+    with col[1]:
+        st.plotly_chart(gr_an_regiao_ob, use_container_width=True)
