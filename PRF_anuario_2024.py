@@ -109,6 +109,14 @@ df_hs_anual['feridos_leves'] = (df_hs_anual['feridos_leves']/1000).round(1)
 df_hs_anual['feridos_graves'] = (df_hs_anual['feridos_graves']/1000).round(1)
 df_hs_anual['mortos'] = (df_hs_anual['mortos']/1000).round(1)
 
+# ****************************************************************************#
+# 3.2 Anuário, 2024
+# 3.2.1 Sinistros por mês
+# Dataframe agrupando por mês e acidentes
+df_sin_mes = df_acidentes.groupby(['mes', 'mes_char'])[
+    'sinistro'].sum().reset_index()
+
+
 # ----------------------------------------------------------------------------#
 # ****************************************************************************#
 # Construção dos Gráficos
@@ -161,6 +169,18 @@ gr_hs_vitimas = px.line(df_hs_anual, x='ano', y=['feridos_leves', 'mortos', 'fer
 gr_hs_vitimas.update_xaxes(type="category", title=None)
 gr_hs_vitimas.update_traces(line_width=2, textposition='top center')
 
+# ****************************************************************************#
+# 3.2 Anuário, 2024
+# 3.2.1 Sinistros por mês
+gr_an_mes = px.line(df_sin_mes, x='mes_char', y=['sinistro'],
+                    markers=True, text='value', line_shape="spline",
+                    template="plotly_dark", render_mode="svg",
+                    labels=dict(mes_char="Mês", value="Sinistros",
+                                variable="Sinistros")
+                    )
+gr_an_mes.update_xaxes(type="category", title=None)
+gr_an_mes.update_layout(showlegend=False)
+gr_an_mes.update_traces(line_width=2, textposition='top center')
 
 #######################
 # Dashboard Main Panel
@@ -232,3 +252,7 @@ st.markdown("<h1 style='text-align: center; color: blue;'>Anuário 2024</h1>",
             unsafe_allow_html=True)
 
 st.markdown("##")
+text = """:orange[**Sinistros por mês**]"""
+
+with st.expander(text, expanded=True):
+    st.plotly_chart(gr_an_mes, use_container_width=True)
