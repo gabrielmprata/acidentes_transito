@@ -71,21 +71,21 @@ pessoas_atual = (df_ind_anual.pessoas.values[1]/1000).round(1)
 pessoas_ant = (df_ind_anual.pessoas.values[0]/1000).round(1)
 pessoas_delta = (pessoas_atual - pessoas_ant).round(1)
 
-feridos_leves_atual = df_ind_anual.feridos_leves.values[1]
-feridos_leves_ant = df_ind_anual.feridos_leves.values[0]
-feridos_leves_delta = feridos_leves_atual - feridos_leves_ant
+feridos_leves_atual = (df_ind_anual.feridos_leves.values[1]/1000).round(1)
+feridos_leves_ant = (df_ind_anual.feridos_leves.values[0]/1000).round(1)
+feridos_leves_delta = (feridos_leves_atual - feridos_leves_ant).round(1)
 
-feridos_graves_atual = df_ind_anual.feridos_graves.values[1]
-feridos_graves_ant = df_ind_anual.feridos_graves.values[0]
-feridos_graves_delta = feridos_graves_atual - feridos_graves_ant
+feridos_graves_atual = (df_ind_anual.feridos_graves.values[1]/1000).round(1)
+feridos_graves_ant = (df_ind_anual.feridos_graves.values[0]/1000).round(1)
+feridos_graves_delta = (feridos_graves_atual - feridos_graves_ant).round(1)
 
-mortos_atual = df_ind_anual.mortos.values[1]
-mortos_ant = df_ind_anual.mortos.values[0]
-mortos_delta = mortos_atual - mortos_ant
+mortos_atual = (df_ind_anual.mortos.values[1]/1000).round(1)
+mortos_ant = (df_ind_anual.mortos.values[0]/1000).round(1)
+mortos_delta = (mortos_atual - mortos_ant).round(1)
 
-ilesos_atual = df_ind_anual.ilesos.values[1]
-ilesos_ant = df_ind_anual.ilesos.values[0]
-ilesos_delta = ilesos_atual - ilesos_ant
+ilesos_atual = (df_ind_anual.ilesos.values[1]/1000).round(1)
+ilesos_ant = (df_ind_anual.ilesos.values[0]/1000).round(1)
+ilesos_delta = (ilesos_atual - ilesos_ant).round(1)
 
 # 3.1.2 Série histórica, 2007-2024
 # Criar métrica com o valor do ano anterior
@@ -187,6 +187,21 @@ with st.expander(text, expanded=True):
         st.markdown('### Ilesos')
         st.metric(label="", value=str(
             ilesos_atual)+" k", delta=str(ilesos_delta)+" k")
+
+    with col[0]:
+        st.markdown('### Feridos Leves')
+        st.metric(delta_color="inverse", label="", value=str(
+            feridos_leves_atual)+" k", delta=str(feridos_leves_delta)+" k")
+
+    with col[1]:
+        st.markdown('### Feridos Graves')
+        st.metric(delta_color="inverse", label="", value=str(
+            feridos_graves_atual)+" k", delta=str(feridos_graves_delta)+" k")
+
+    with col[2]:
+        st.markdown('### Óbitos')
+        st.metric(delta_color="inverse", label="", value=str(
+            mortos_atual)+" k", delta=str(mortos_delta)+" k")
 
 
 text = """:orange[**Série histórica, 2007-2024**]"""
