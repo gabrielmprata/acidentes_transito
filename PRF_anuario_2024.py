@@ -161,6 +161,42 @@ for feature in Brasil["features"]:
 df_uf_regiao_mortos = df_acidentes.groupby(["ano", "uf", "regiao"])[
     'mortos'].sum().reset_index()
 
+# 3.2.6 Rodovias com mais sinistros
+# Agrupando por BR e UF, para saber em qual trecho da BR teve mais sinistros
+df_br = df_acidentes.groupby(["br", "uf"])['sinistro'].sum().reset_index()
+
+# ordenando e selecionando o TOP 10
+df_br = df_br.sort_values(by='sinistro', ascending=False).head(10)
+
+# Concatenando os campos BR e UF
+df_br['BR/UF'] = 'BR ' + df_br['br'].map(str) + '/' + df_br['uf']
+
+# 3.2.6 Rodovias com mais registros de mortos
+df_br_mortos = df_acidentes.groupby(["br", "uf"])['mortos'].sum().reset_index()
+
+# ordenando e selecionando o TOP 10
+df_br_mortos = df_br_mortos.sort_values(by='mortos', ascending=False).head(10)
+
+# Concatenando os campos BR e UF
+df_br_mortos['BR/UF'] = 'BR ' + \
+    df_br_mortos['br'].map(str) + '/' + df_br_mortos['uf']
+
+# 3.2.7 Sinistros por condição climática
+# Dataframe agrupando por condicao climatica
+df_clima = df_acidentes.groupby(["condicao_metereologica"])[
+    'sinistro'].sum().reset_index()
+
+# Proporção
+df_prop_clima = df_acidentes.groupby('condicao_metereologica')[
+    ['sinistro', 'mortos', 'feridos_leves', 'feridos_graves']].apply(lambda x: x.sum()).reset_index()
+
+df_prop_clima = df_prop_clima.melt(id_vars=["condicao_metereologica"],
+                                   var_name="metrica",
+                                   value_name="quantidade")
+
+df_prop_clima['%'] = 100 * df_prop_clima['quantidade'] / \
+    df_prop_clima.groupby('metrica')['quantidade'].transform('sum')
+
 
 # ----------------------------------------------------------------------------#
 # ****************************************************************************#
@@ -326,6 +362,43 @@ gr_an_regiao_ob = px.pie(df_uf_regiao_mortos, values='mortos', names='regiao', l
 gr_an_regiao_ob.update_layout(showlegend=False)
 gr_an_regiao_ob.update_traces(textposition='outside', textinfo='percent+label')
 
+# 3.2.6 Rodovias com mais sinistros
+gr_an_br_uf = px.bar(df_br, x="BR/UF", y="sinistro",
+                     labels=dict(sinistro="Sinistros"),
+                     # hover_data=['semagestac', 'gestacao'],
+                     color_discrete_sequence=px.colors.sequential.Blues_r,  text_auto='.2s',
+                     template="plotly_dark"
+                     )
+
+# 3.2.6 Rodovias com mais registros de mortos
+gr_an_br_uf_ob = px.bar(df_br_mortos, x="BR/UF", y="mortos",
+                        labels=dict(mortos="Mortos"),
+                        color_discrete_sequence=px.colors.sequential.Blues_r,  text_auto='.2s',
+                        template="plotly_dark"
+                        )
+
+# 3.2.7 Sinistros por condição climática
+gr_an_clima = px.bar(df_clima.sort_values(by='sinistro', ascending=False), x="condicao_metereologica", y="sinistro",
+                     labels=dict(
+                         condicao_metereologica="Condição climática", sinistro="Sinistros"),
+                     height=350, width=600,  # altura x largura
+                     color_discrete_sequence=px.colors.sequential.Blues_r,  text_auto='.2s',
+                     template="plotly_dark"
+                     )
+
+
+# proporção
+gr_an_clima_prop = px.bar(df_prop_clima.sort_values(['metrica', '%'], ascending=[True, False]), x='metrica', y='%', color='condicao_metereologica',
+                          labels=dict(
+                              condicao_metereologica="Condição climática", metrica="Métrica"),
+                          # height=350, width=600, #altura x largura
+                          color_discrete_sequence=px.colors.sequential.Blues_r,
+                          template="plotly_dark", text="condicao_metereologica"
+                          )
+gr_an_clima_prop.update_layout(showlegend=False)
+gr_an_clima_prop.update_yaxes(
+    ticksuffix="%", showgrid=True)  # the y-axis is in percent
+
 #######################
 # Dashboard Main Panel
 
@@ -395,7 +468,6 @@ with st.expander(text, expanded=True):
 st.markdown("<h1 style='text-align: center; color: blue;'>Anuário 2024</h1>",
             unsafe_allow_html=True)
 
-st.markdown("##")
 text = """:orange[**Sinistros por mês**]"""
 
 with st.expander(text, expanded=True):
@@ -440,3 +512,26 @@ with st.expander(text, expanded=True):
 
     with col[1]:
         st.plotly_chart(gr_an_regiao_ob, use_container_width=True)
+
+text = """:orange[**Rodovias com mais sinistros**]"""
+
+with st.expander(text, expanded=True):
+    st.plotly_chart(gr_an_br_uf, use_container_width=True)
+
+
+text = """:orange[**Rodovias com mais registros de mortos**]"""
+
+with st.expander(text, expanded=True):
+    st.plotly_chart(gr_an_br_uf_ob, use_container_width=True)
+
+
+text = """:orange[**Sinistros por condição climática**]"""
+
+with st.expander(text, expanded=True):
+    col = st.columns((3.1, 5.1), gap='medium')
+
+    with col[0]:
+        st.plotly_chart(gr_an_clima, use_container_width=True)
+
+    with col[1]:
+        st.plotly_chart(gr_an_clima_prop, use_container_width=True)
