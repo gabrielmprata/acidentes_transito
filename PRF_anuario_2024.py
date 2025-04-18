@@ -197,6 +197,14 @@ df_prop_clima = df_prop_clima.melt(id_vars=["condicao_metereologica"],
 df_prop_clima['%'] = 100 * df_prop_clima['quantidade'] / \
     df_prop_clima.groupby('metrica')['quantidade'].transform('sum')
 
+# 3.2.8 Sinistros por tipo e causa de acidente
+# Dataframe agrupando por tipo de acidente
+df_tipo_acidente = (df_acidentes.groupby(["tipo_acidente"])['sinistro'].sum().reset_index()
+                    ).sort_values(by='sinistro', ascending=False)
+
+# Dataframe agrupando por causa de acidente
+df_causa_acidente = (df_acidentes.groupby(["causa_acidente"])['sinistro'].sum().reset_index()
+                     ).sort_values(by='sinistro', ascending=False)
 
 # ----------------------------------------------------------------------------#
 # ****************************************************************************#
@@ -399,6 +407,27 @@ gr_an_clima_prop.update_layout(showlegend=False)
 gr_an_clima_prop.update_yaxes(
     ticksuffix="%", showgrid=True)  # the y-axis is in percent
 
+# 3.2.8 Sinistros por tipo e causa de acidente
+gr_an_tipo_acidente = px.bar(df_tipo_acidente, x='sinistro', y='tipo_acidente', color='tipo_acidente', orientation='h',
+                             labels=dict(sinistro="Sinistros",
+                                         tipo_acidente="Tipo de acidente"),
+                             color_discrete_sequence=["blue"],
+                             template="plotly_dark",  text_auto='.2s'
+
+                             )
+gr_an_tipo_acidente.update_layout(showlegend=False)
+
+
+# tipo acidente
+gr_an_causa_acidente = px.bar(df_causa_acidente.head(16), x='sinistro', y='causa_acidente', color='causa_acidente', orientation='h',
+                              labels=dict(sinistro="Sinistros",
+                                          causa_acidente="Causa do acidente"),
+                              color_discrete_sequence=["blue"],
+                              template="plotly_dark",  text_auto='.2s'
+
+                              )
+gr_an_causa_acidente.update_layout(showlegend=False)
+
 #######################
 # Dashboard Main Panel
 
@@ -535,3 +564,15 @@ with st.expander(text, expanded=True):
 
     with col[1]:
         st.plotly_chart(gr_an_clima_prop, use_container_width=True)
+
+
+text = """:orange[**Sinistros por tipo e causa de acidente**]"""
+
+with st.expander(text, expanded=True):
+    col = st.columns((4.1, 5.1), gap='medium')
+
+    with col[0]:
+        st.plotly_chart(gr_an_tipo_acidente, use_container_width=True)
+
+    with col[1]:
+        st.plotly_chart(gr_an_causa_acidente, use_container_width=True)
