@@ -215,6 +215,11 @@ df_tipo_acid_mortos = (df_acidentes.groupby(["tipo_acidente"])['mortos'].sum().r
 df_causa_acid_mortos = (df_acidentes.groupby(["causa_acidente"])['mortos'].sum().reset_index()
                         ).sort_values(by='mortos', ascending=False)
 
+# 3.3 Pessoas Envolvidas
+# 3.3.1 Pessoas Envolvidas por mês
+df_pessoas_mes = df_pessoas.groupby(['mes', 'mes_char'])[
+    'pessoas'].sum().reset_index()
+
 # ----------------------------------------------------------------------------#
 # ****************************************************************************#
 # Construção dos Gráficos
@@ -456,6 +461,24 @@ gr_an_causa_obito = px.bar(df_causa_acid_mortos.head(16), x='mortos', y='causa_a
                            )
 gr_an_causa_obito.update_layout(showlegend=False)
 
+# 3.3 Pessoas Envolvidas
+# 3.3.1 Pessoas Envolvidas por mês
+
+gr_an_pessoas = px.line(df_pessoas_mes, x='mes_char', y=['pessoas'],
+                        markers=True, text='value',
+                        # height=600, width=800, #altura x largura
+                        line_shape="spline",
+                        template="plotly_dark",
+                        render_mode="svg",
+
+                        labels=dict(mes_char="Mês", value="Pessoas",
+                                    variable="Pessoas")
+                        )
+# se o type for date, vai respeitar o intervalo
+gr_an_pessoas.update_xaxes(type="category", title=None)
+gr_an_pessoas.update_layout(showlegend=False)
+gr_an_pessoas.update_traces(line_width=2, textposition='top center')
+
 
 #######################
 # Dashboard Main Panel
@@ -616,3 +639,8 @@ with st.expander(text, expanded=True):
 
     with col[1]:
         st.plotly_chart(gr_an_causa_obito, use_container_width=True)
+
+text = """:orange[**Óbitos por tipo e causa de acidente**]"""
+
+with st.expander(text, expanded=True):
+    st.plotly_chart(gr_an_pessoas, use_container_width=True)
