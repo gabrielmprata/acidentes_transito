@@ -206,6 +206,15 @@ df_tipo_acidente = (df_acidentes.groupby(["tipo_acidente"])['sinistro'].sum().re
 df_causa_acidente = (df_acidentes.groupby(["causa_acidente"])['sinistro'].sum().reset_index()
                      ).sort_values(by='sinistro', ascending=False)
 
+# 3.2.9 Óbitos por tipo e causa de acidente
+# Dataframe agrupando por tipo de acidente
+df_tipo_acid_mortos = (df_acidentes.groupby(["tipo_acidente"])['mortos'].sum().reset_index()
+                       ).sort_values(by='mortos', ascending=False)
+
+# Dataframe agrupando por causa de acidente
+df_causa_acid_mortos = (df_acidentes.groupby(["causa_acidente"])['mortos'].sum().reset_index()
+                        ).sort_values(by='mortos', ascending=False)
+
 # ----------------------------------------------------------------------------#
 # ****************************************************************************#
 # Construção dos Gráficos
@@ -428,6 +437,26 @@ gr_an_causa_acidente = px.bar(df_causa_acidente.head(16), x='sinistro', y='causa
                               )
 gr_an_causa_acidente.update_layout(showlegend=False)
 
+# 3.2.9 Óbitos por tipo e causa de acidente
+gr_an_tipo_obito = px.bar(df_tipo_acid_mortos, x='mortos', y='tipo_acidente', color='tipo_acidente', orientation='h',
+                          labels=dict(mortos="Mortos",
+                                      tipo_acidente="Tipo de acidente"),
+                          color_discrete_sequence=["red"],
+                          template="plotly_dark",  text_auto='.2s'
+
+                          )
+gr_an_tipo_obito.update_layout(showlegend=False)
+
+gr_an_causa_obito = px.bar(df_causa_acid_mortos.head(16), x='mortos', y='causa_acidente', color='causa_acidente', orientation='h',
+                           labels=dict(mortos="Mortos",
+                                       causa_acidente="Causa do acidente"),
+                           color_discrete_sequence=["red"],
+                           template="plotly_dark",  text_auto='.2s'
+
+                           )
+gr_an_causa_obito.update_layout(showlegend=False)
+
+
 #######################
 # Dashboard Main Panel
 
@@ -576,3 +605,14 @@ with st.expander(text, expanded=True):
 
     with col[1]:
         st.plotly_chart(gr_an_causa_acidente, use_container_width=True)
+
+text = """:orange[**Óbitos por tipo e causa de acidente**]"""
+
+with st.expander(text, expanded=True):
+    col = st.columns((4.1, 5.1), gap='medium')
+
+    with col[0]:
+        st.plotly_chart(gr_an_tipo_obito, use_container_width=True)
+
+    with col[1]:
+        st.plotly_chart(gr_an_causa_obito, use_container_width=True)
