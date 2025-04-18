@@ -220,6 +220,19 @@ df_causa_acid_mortos = (df_acidentes.groupby(["causa_acidente"])['mortos'].sum()
 df_pessoas_mes = df_pessoas.groupby(['mes', 'mes_char'])[
     'pessoas'].sum().reset_index()
 
+# 3.3.2 Pessoas Envolvidas por dia da semana, horário e fase do dia
+# Dataframe agrupando por dia da semana
+df_pes_semana = df_pessoas.groupby(['semana', 'dia_semana'])[
+    'pessoas'].sum().reset_index()
+
+# Dataframe agrupando por dia da semana e hora
+df_pes_hora = df_pessoas.groupby(['semana', 'dia_semana', 'hora'])[
+    'pessoas'].sum().reset_index()
+
+# Dataframe agrupando por dia da semana e hora
+df_pes_fase_dia = df_pessoas.groupby(
+    ['fase_dia'])['pessoas'].sum().reset_index()
+
 # ----------------------------------------------------------------------------#
 # ****************************************************************************#
 # Construção dos Gráficos
@@ -479,6 +492,40 @@ gr_an_pessoas.update_xaxes(type="category", title=None)
 gr_an_pessoas.update_layout(showlegend=False)
 gr_an_pessoas.update_traces(line_width=2, textposition='top center')
 
+# 3.3.2 Pessoas Envolvidas por dia da semana, horário e fase do dia
+gr_an_pes_semana = px.bar(df_pes_semana, x="dia_semana", y="pessoas",
+                          labels=dict(dia_semana="Dia da semana",
+                                      pessoas="Pessoas"),
+                          height=350, width=600,  # altura x largura
+                          color_discrete_sequence=px.colors.sequential.Blues_r,  text_auto='.2s',
+                          template="plotly_dark"
+                          )
+
+gr_an_pes_heat = px.density_heatmap(df_pes_hora,
+                                    x="dia_semana",
+                                    y="hora",
+                                    z="pessoas",
+                                    histfunc="sum", text_auto=True,
+                                    # labels=dict(mes="Mês"),
+                                    labels=dict(
+                                        dia_semana="Dia da semana",  hora="Hora"),
+                                    color_continuous_scale="RdYlBu_r", template="plotly_dark"
+                                    )
+
+gr_an_pes_heat.layout['coloraxis']['colorbar']['title'] = 'Pessoas'
+# se o type for date, vai respeitar o intervalo
+gr_an_pes_heat.update_yaxes(type="category")
+# se o type for date, vai respeitar o intervalo
+gr_an_pes_heat.update_xaxes(type="category")
+
+gr_an_pes_fase = px.bar(df_pes_fase_dia, x="fase_dia", y="pessoas",
+                        labels=dict(fase_dia="Fase do dia", pessoas="Pessoas"),
+                        height=350, width=600,  # altura x largura
+                        color_discrete_sequence=px.colors.sequential.Blues_r,  text_auto='.2s',
+                        template="plotly_dark",
+                        category_orders={"fase_dia": [
+                            "Amanhecer", "Pleno dia", "Anoitecer", "Plena Noite"]}
+                        )
 
 #######################
 # Dashboard Main Panel
@@ -640,7 +687,26 @@ with st.expander(text, expanded=True):
     with col[1]:
         st.plotly_chart(gr_an_causa_obito, use_container_width=True)
 
-text = """:orange[**Óbitos por tipo e causa de acidente**]"""
+
+st.markdown(
+    "### :blue[Pessoas envolvidas]")
+
+
+text = """:orange[**Pessoas Envolvidas por mês**]"""
 
 with st.expander(text, expanded=True):
     st.plotly_chart(gr_an_pessoas, use_container_width=True)
+
+
+text = """:orange[**Pessoas envolvidas por dia da semana, horário e fase do dia**]"""
+
+with st.expander(text, expanded=True):
+    col = st.columns((4.1, 3.1), gap='medium')
+
+    with col[0]:
+        st.plotly_chart(gr_an_pes_semana, use_container_width=True)
+
+    with col[1]:
+        st.plotly_chart(gr_an_pes_fase, use_container_width=True)
+
+    st.plotly_chart(gr_an_pes_heat, use_container_width=True)
