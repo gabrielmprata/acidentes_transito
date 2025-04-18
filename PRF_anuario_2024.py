@@ -233,6 +233,18 @@ df_pes_hora = df_pessoas.groupby(['semana', 'dia_semana', 'hora'])[
 df_pes_fase_dia = df_pessoas.groupby(
     ['fase_dia'])['pessoas'].sum().reset_index()
 
+# 3.3.3 Tipo de Pessoas Envolvidas
+df_tipo_pessoa = df_pessoas.groupby('tipo_envolvido')[
+    ['pessoas', 'mortos', 'feridos_leves', 'feridos_graves', 'ilesos']].apply(lambda x: x.sum()).reset_index()
+
+# prop
+df_prop_tipo_pes = df_tipo_pessoa.melt(id_vars=["tipo_envolvido"],
+                                       var_name="metrica",
+                                       value_name="quantidade")
+
+df_prop_tipo_pes['%'] = 100 * df_prop_tipo_pes['quantidade'] / \
+    df_prop_tipo_pes.groupby('metrica')['quantidade'].transform('sum')
+
 # ----------------------------------------------------------------------------#
 # ****************************************************************************#
 # Construção dos Gráficos
@@ -527,6 +539,26 @@ gr_an_pes_fase = px.bar(df_pes_fase_dia, x="fase_dia", y="pessoas",
                             "Amanhecer", "Pleno dia", "Anoitecer", "Plena Noite"]}
                         )
 
+# 3.3.3 Tipo de Pessoas Envolvidas
+gr_an_tipo_pess = px.pie(df_tipo_pessoa, values='pessoas', names='tipo_envolvido',
+                         labels=dict(
+                             tipo_envolvido="Tipo de pessoa envolvida", pessoas="Pessoas"),
+                         height=350, width=350, color_discrete_sequence=px.colors.sequential.Blues_r, template="plotly_dark"
+                         )
+gr_an_tipo_pess.update_layout(showlegend=False)
+gr_an_tipo_pess.update_traces(textposition='outside', textinfo='percent+label')
+
+gr_an_tipo_pess_prop = px.bar(df_prop_tipo_pes.sort_values(['metrica', '%'], ascending=[True, True]), x='metrica', y='%', color='tipo_envolvido',
+                              labels=dict(
+                                  tipo_envolvido="Tipo pessoa envolvida", metrica="Métrica"),
+                              # height=350, width=600, #altura x largura
+                              color_discrete_sequence=px.colors.sequential.Blues_r,
+                              template="plotly_dark", text="tipo_envolvido"
+                              )
+gr_an_tipo_pess_prop.update_yaxes(
+    ticksuffix="%", showgrid=True)  # the y-axis is in percent
+
+
 #######################
 # Dashboard Main Panel
 
@@ -710,3 +742,14 @@ with st.expander(text, expanded=True):
         st.plotly_chart(gr_an_pes_fase, use_container_width=True)
 
     st.plotly_chart(gr_an_pes_heat, use_container_width=True)
+
+text = """:orange[**Tipo de Pessoas Envolvidas**]"""
+
+with st.expander(text, expanded=True):
+    col = st.columns((3.1, 5.1), gap='medium')
+
+    with col[0]:
+        st.plotly_chart(gr_an_tipo_pess, use_container_width=True)
+
+    with col[1]:
+        st.plotly_chart(gr_an_tipo_pess_prop, use_container_width=True)
