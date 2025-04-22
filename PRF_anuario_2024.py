@@ -8,6 +8,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import plotly.express as px
+import plotly.graph_objects as go
 from streamlit_extras.metric_cards import style_metric_cards
 
 
@@ -255,6 +256,28 @@ gr_pes_genero = df_pessoas.groupby(['sexo_tratado'])[
 # Como condutor
 gr_pes_genero_cond = df_pessoas[(df_pessoas['tipo_envolvido'] == 'Condutor')].groupby([
     'sexo_tratado'])['pessoas'].sum().reset_index()
+
+# 3.3.5 Pirâmide etária dos envolvidos em acidentes de trânsito
+# Visão Total de pessoas
+# SUM(CASE WHEN)
+gr_ac_faixa_idade = df_pessoas.groupby(['faixa_idade'], as_index=False).apply(lambda x: pd.Series({'Masculino': x.loc[x.sexo_tratado == 'Masculino']['pessoas'].sum(),
+                                                                                                   'Feminino': x.loc[x.sexo_tratado == 'Feminino']['pessoas'].sum()}))
+
+# SUM(CASE WHEN)
+gr_ac_faixa_idade_condutor = df_pessoas[(df_pessoas['tipo_envolvido'] == 'Condutor')].groupby(['faixa_idade'], as_index=False).apply(lambda x: pd.Series({'Masculino': x.loc[x.sexo_tratado == 'Masculino']['pessoas'].sum(),
+                                                                                                                                                          'Feminino': x.loc[x.sexo_tratado == 'Feminino']['pessoas'].sum()}))
+# Setando os eixos
+# Total
+y_idade = gr_ac_faixa_idade['faixa_idade']
+x_M = gr_ac_faixa_idade['Masculino']
+# multiplicar por -1 para inverter o eixoX
+x_F = gr_ac_faixa_idade['Feminino'] * -1
+
+# Condutor
+y_idade_c = gr_ac_faixa_idade_condutor['faixa_idade']
+x_M_c = gr_ac_faixa_idade_condutor['Masculino']
+# multiplicar por -1 para inverter o eixoX
+x_F_c = gr_ac_faixa_idade_condutor['Feminino'] * -1
 
 
 # ----------------------------------------------------------------------------#
@@ -636,6 +659,64 @@ gr_an_genero_con.add_layout_image(
     )
 )
 
+# 3.3.5 Pirâmide etária dos envolvidos em acidentes de trânsito
+gr_an_piramide = go.Figure()
+
+# Adicionando as informações de Masculino
+gr_an_piramide.add_trace(go.Bar(y=y_idade, x=x_M,
+                                name='Masculino',
+                                marker_color='cornflowerblue',
+                                orientation='h'))
+
+# Adicionando as informações de Masculino
+gr_an_piramide.add_trace(go.Bar(y=y_idade, x=x_F, marker_color='lightblue',
+                                name='Feminino', orientation='h'))
+
+# Updating the layout for our graph
+gr_an_piramide.update_layout(title='Visão Geral',
+                             title_font_size=13, barmode='relative',
+                             plot_bgcolor='#918d8d', paper_bgcolor='#918d8d',
+                             bargap=0.0, bargroupgap=0,
+                             xaxis=dict(tickvals=[-30000, -20000, -6000,
+                                                  0, 6000, 20000, 30000],  # valores dos intervalos do eixoX
+
+                                          ticktext=['30k', '20k', '6k', '0',
+                                                    '6k', '20k', '30k'],  # rotulo do eixoX
+
+                                          title='Pessoas (k)',
+                                          title_font_size=14)
+                             )
+
+
+# Visao Condutor
+gr_an_piramide_c = go.Figure()
+
+# Adicionando as informações de Masculino
+gr_an_piramide_c.add_trace(go.Bar(y=y_idade_c, x=x_M_c,
+                                  name='Masculino',
+                                  marker_color='cornflowerblue',
+                                  orientation='h'))
+
+# Adicionando as informações de Masculino
+gr_an_piramide_c.add_trace(go.Bar(y=y_idade_c, x=x_F_c, marker_color='lightblue',
+                                  name='Feminino', orientation='h'))
+
+# Updating the layout for our graph
+gr_an_piramide_c.update_layout(title='Visão Condutor',
+                               title_font_size=13, barmode='relative',
+                               plot_bgcolor='#918d8d', paper_bgcolor='#918d8d',
+                               bargap=0.0, bargroupgap=0,
+                               xaxis=dict(tickvals=[-30000, -20000, -6000,
+                                                    0, 6000, 20000, 30000],  # valores dos intervalos do eixoX
+
+                                            ticktext=['30k', '20k', '6k', '0',
+                                                      '6k', '20k', '30k'],  # rotulo do eixoX
+
+                                          title='Pessoas (k)',
+                                          title_font_size=14)
+                               )
+
+
 #######################
 # Dashboard Main Panel
 
@@ -843,3 +924,15 @@ with st.expander(text, expanded=True):
     with col[1]:
         st.markdown('### Visão do Condutor')
         st.plotly_chart(gr_an_genero_con, use_container_width=True)
+
+
+text = """:orange[**Pirâmide etária dos envolvidos em acidentes de trânsito**]"""
+
+with st.expander(text, expanded=True):
+    col = st.columns((4.1, 4.1), gap='medium')
+
+    with col[0]:
+        st.plotly_chart(gr_an_piramide, use_container_width=True)
+
+    with col[1]:
+        st.plotly_chart(gr_an_piramide_c, use_container_width=True)
