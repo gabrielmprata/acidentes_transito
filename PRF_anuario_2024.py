@@ -245,6 +245,18 @@ df_prop_tipo_pes = df_tipo_pessoa.melt(id_vars=["tipo_envolvido"],
 df_prop_tipo_pes['%'] = 100 * df_prop_tipo_pes['quantidade'] / \
     df_prop_tipo_pes.groupby('metrica')['quantidade'].transform('sum')
 
+
+# 3.3.4 Envolvidos por gênero
+# Criando dataframe
+# Total
+gr_pes_genero = df_pessoas.groupby(['sexo_tratado'])[
+    'pessoas'].sum().reset_index()
+
+# Como condutor
+gr_pes_genero_cond = df_pessoas[(df_pessoas['tipo_envolvido'] == 'Condutor')].groupby([
+    'sexo_tratado'])['pessoas'].sum().reset_index()
+
+
 # ----------------------------------------------------------------------------#
 # ****************************************************************************#
 # Construção dos Gráficos
@@ -558,6 +570,71 @@ gr_an_tipo_pess_prop = px.bar(df_prop_tipo_pes.sort_values(['metrica', '%'], asc
 gr_an_tipo_pess_prop.update_yaxes(
     ticksuffix="%", showgrid=True)  # the y-axis is in percent
 
+# 3.3.4 Envolvidos por gênero
+
+gr_an_genero = px.pie(gr_pes_genero, names='sexo_tratado', values='pessoas', height=300, width=600, hole=0.7,
+                      color_discrete_sequence=px.colors.sequential.Blues_r, title="Visão Geral")
+gr_an_genero.update_traces(
+    hovertemplate=None, textposition='outside', textinfo='percent+label', rotation=50)
+gr_an_genero.update_layout(margin=dict(t=50, b=35, l=0, r=0), showlegend=False,
+                           plot_bgcolor='#fafafa', paper_bgcolor='#fafafa',
+                           font=dict(size=17, color='#8a8d93'),
+                           hoverlabel=dict(bgcolor="#444", font_size=13, font_family="Lato, sans-serif"))
+gr_an_genero.add_annotation(dict(x=0.5, y=0.4,  align='center',
+                                 xref="paper", yref="paper",
+                                 showarrow=False, font_size=22,
+                                 text="Gênero"))
+gr_an_genero.add_layout_image(
+    dict(
+        source="https://i.imgur.com/3Cab96Z.jpg",
+        xref="paper", yref="paper",
+        x=0.48, y=0.48,
+        sizex=0.3, sizey=0.25,
+        xanchor="right", yanchor="bottom", sizing="contain",
+    )
+)
+gr_an_genero.add_layout_image(
+    dict(
+        source="https://i.imgur.com/c6QKoDy.jpg",
+        xref="paper", yref="paper",
+        x=0.55, y=0.48,
+        sizex=0.3, sizey=0.25,
+        xanchor="right", yanchor="bottom", sizing="contain",
+    )
+)
+
+
+# Visão Condutor
+gr_an_genero_con = px.pie(gr_pes_genero_cond, names='sexo_tratado', values='pessoas', height=300, width=600, hole=0.7,
+                          color_discrete_sequence=px.colors.sequential.Blues_r, title="Visão Condutor")
+gr_an_genero_con.update_traces(
+    hovertemplate=None, textposition='outside', textinfo='percent+label', rotation=50)
+gr_an_genero_con.update_layout(margin=dict(t=50, b=35, l=0, r=0), showlegend=False,
+                               plot_bgcolor='#fafafa', paper_bgcolor='#fafafa',
+                               font=dict(size=17, color='#8a8d93'),
+                               hoverlabel=dict(bgcolor="#444", font_size=13, font_family="Lato, sans-serif"))
+gr_an_genero_con.add_annotation(dict(x=0.5, y=0.4,  align='center',
+                                     xref="paper", yref="paper",
+                                     showarrow=False, font_size=22,
+                                     text="Gênero"))
+gr_an_genero_con.add_layout_image(
+    dict(
+        source="https://i.imgur.com/3Cab96Z.jpg",
+        xref="paper", yref="paper",
+        x=0.48, y=0.48,
+        sizex=0.3, sizey=0.25,
+        xanchor="right", yanchor="bottom", sizing="contain",
+    )
+)
+gr_an_genero_con.add_layout_image(
+    dict(
+        source="https://i.imgur.com/c6QKoDy.jpg",
+        xref="paper", yref="paper",
+        x=0.55, y=0.48,
+        sizex=0.3, sizey=0.25,
+        xanchor="right", yanchor="bottom", sizing="contain",
+    )
+)
 
 #######################
 # Dashboard Main Panel
@@ -753,3 +830,16 @@ with st.expander(text, expanded=True):
 
     with col[1]:
         st.plotly_chart(gr_an_tipo_pess_prop, use_container_width=True)
+
+text = """:orange[**Envolvidas por gênero**]"""
+
+with st.expander(text, expanded=True):
+    col = st.columns((4.1, 4.1), gap='medium')
+
+    with col[0]:
+        st.markdown('### Visão Geral')
+        st.plotly_chart(gr_an_genero, use_container_width=True)
+
+    with col[1]:
+        st.markdown('### Visão do Condutor')
+        st.plotly_chart(gr_an_genero_con, use_container_width=True)
