@@ -279,6 +279,17 @@ x_M_c = gr_ac_faixa_idade_condutor['Masculino']
 # multiplicar por -1 para inverter o eixoX
 x_F_c = gr_ac_faixa_idade_condutor['Feminino'] * -1
 
+# 3.3.7 Pessoas envolvidas por tipo de veículo
+# agrupa
+# df_tipo_veiculo = df_pessoas.groupby('classe_veiculos')[
+#   ['pessoas', 'mortos', 'feridos', 'feridos_leves', 'feridos_graves', 'ilesos']].apply(lambda x: x.sum()).reset_index()
+
+
+df_tipo_veiculo = df_pessoas.groupby('classe_veiculos')[
+    ['pessoas', 'mortos', 'feridos_leves', 'feridos_graves', 'ilesos']].apply(lambda x: x.sum()).reset_index()
+
+df_tipo_veiculo['feridos'] = df_tipo_veiculo['feridos_leves'] + \
+    df_tipo_veiculo['feridos_graves']
 
 # ----------------------------------------------------------------------------#
 # ****************************************************************************#
@@ -716,6 +727,43 @@ gr_an_piramide_c.update_layout(title='Visão Condutor',
                                           title_font_size=14)
                                )
 
+# 3.3.7 Pessoas envolvidas por tipo de veículo
+# pessoas
+gr_an_pes_tipo_vec = px.pie(df_tipo_veiculo, values='pessoas', names='classe_veiculos',
+                            labels=dict(
+                                classe_veiculos="Tipo de Veículo", pessoas="Pessoas"),
+                            title='Pessoas',
+                            height=350, width=350, color_discrete_sequence=px.colors.sequential.Blues_r, template="plotly_dark"
+                            )
+gr_an_pes_tipo_vec.update_layout(showlegend=False)
+gr_an_pes_tipo_vec.update_traces(
+    textposition='outside', textinfo='percent+label')
+
+# mortos
+gr_an_mort_tipo_vec = px.pie(df_tipo_veiculo, values='mortos', names='classe_veiculos',
+                             labels=dict(
+                                 classe_veiculos="Tipo de Veículo", mortos="Mortos"),
+                             title='Mortos',
+                             height=350, width=350, color_discrete_sequence=px.colors.sequential.Blues_r, template="plotly_dark"
+                             )
+gr_an_mort_tipo_vec.update_layout(showlegend=False)
+gr_an_mort_tipo_vec.update_traces(
+    textposition='outside', textinfo='percent+label')
+
+
+# feridos
+gr_an_fer_tipo_vec = px.pie(df_tipo_veiculo, values='feridos', names='classe_veiculos',
+                            labels=dict(
+                                classe_veiculos="Tipo de Veículo", feridos="Feridos"),
+                            title='Feridos',
+                            height=350, width=350, color_discrete_sequence=px.colors.sequential.Blues_r, template="plotly_dark"
+                            )
+gr_an_fer_tipo_vec.update_layout(showlegend=False)
+gr_an_fer_tipo_vec.update_traces(
+    textposition='outside', textinfo='percent+label')
+
+# 3.3.8 Condutores envolvidos por tipo de veículo
+
 
 #######################
 # Dashboard Main Panel
@@ -936,3 +984,17 @@ with st.expander(text, expanded=True):
 
     with col[1]:
         st.plotly_chart(gr_an_piramide_c, use_container_width=True)
+
+text = """:orange[**Pessoas envolvidas por tipo de veículo**]"""
+
+with st.expander(text, expanded=True):
+    col = st.columns((3.1, 3.1, 3.1), gap='medium')
+
+    with col[0]:
+        st.plotly_chart(gr_an_pes_tipo_vec, use_container_width=True)
+
+    with col[1]:
+        st.plotly_chart(gr_an_mort_tipo_vec, use_container_width=True)
+
+    with col[2]:
+        st.plotly_chart(gr_an_fer_tipo_vec, use_container_width=True)
