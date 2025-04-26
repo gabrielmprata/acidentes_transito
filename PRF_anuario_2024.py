@@ -291,6 +291,16 @@ df_tipo_veiculo = df_pessoas.groupby('classe_veiculos')[
 df_tipo_veiculo['feridos'] = df_tipo_veiculo['feridos_leves'] + \
     df_tipo_veiculo['feridos_graves']
 
+# 3.3.8 Condutores envolvidos por tipo de veículo
+# condutor pessoas
+gr_pes_veic_cond = df_pessoas[(df_pessoas['tipo_envolvido'] == 'Condutor')].groupby([
+    'classe_veiculos'])['pessoas'].sum().reset_index()
+
+# condutor mortos
+gr_mort_veic_cond = df_pessoas[(df_pessoas['tipo_envolvido'] == 'Condutor')].groupby([
+    'classe_veiculos'])['mortos'].sum().reset_index()
+
+
 # ----------------------------------------------------------------------------#
 # ****************************************************************************#
 # Construção dos Gráficos
@@ -763,7 +773,27 @@ gr_an_fer_tipo_vec.update_traces(
     textposition='outside', textinfo='percent+label')
 
 # 3.3.8 Condutores envolvidos por tipo de veículo
+# pessoas condutor
+gr_an_pes_veic_cond = px.pie(gr_pes_veic_cond, values='pessoas', names='classe_veiculos',
+                             labels=dict(
+                                 classe_veiculos="Tipo de Veículo", pessoas="Pessoas"),
+                             title='Pessoas',
+                             height=350, width=350, color_discrete_sequence=px.colors.sequential.Blues_r, template="plotly_dark"
+                             )
+gr_an_pes_veic_cond.update_layout(showlegend=False)
+gr_an_pes_veic_cond.update_traces(
+    textposition='outside', textinfo='percent+label')
 
+# mortos
+gr_an_mort_veic_cond = px.pie(gr_mort_veic_cond, values='mortos', names='classe_veiculos',
+                              labels=dict(
+                                  classe_veiculos="Tipo de Veículo", mortos="Mortos"),
+                              title='Mortos',
+                              height=350, width=350, color_discrete_sequence=px.colors.sequential.Blues_r, template="plotly_dark"
+                              )
+gr_an_mort_veic_cond.update_layout(showlegend=False)
+gr_an_mort_veic_cond.update_traces(
+    textposition='outside', textinfo='percent+label')
 
 #######################
 # Dashboard Main Panel
@@ -998,3 +1028,14 @@ with st.expander(text, expanded=True):
 
     with col[2]:
         st.plotly_chart(gr_an_fer_tipo_vec, use_container_width=True)
+
+text = """:orange[**Condutores envolvidos por tipo de veículo**]"""
+
+with st.expander(text, expanded=True):
+    col = st.columns((4.1, 4.1), gap='medium')
+
+    with col[0]:
+        st.plotly_chart(gr_an_pes_veic_cond, use_container_width=True)
+
+    with col[1]:
+        st.plotly_chart(gr_an_mort_veic_cond, use_container_width=True)
