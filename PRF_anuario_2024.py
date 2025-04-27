@@ -52,6 +52,9 @@ df_hs_anual = pd.read_csv(url3, delimiter=';')
 df_pessoas = pd.read_csv(url4, compression='bz2',
                          encoding="utf8", delimiter=',')
 
+df_pessoas['feridos'] = df_pessoas['feridos_leves'] + \
+    df_pessoas['feridos_graves']
+
 # ----------------------------------------------------------------------------#
 # ****************************************************************************#
 # Construção dos Datasets
@@ -316,6 +319,14 @@ df_prop_veicular['%'] = 100 * df_prop_veicular['quantidade'] / \
 # 3.4.1 Pessoas envolvidos por região e tipo de veículo
 df_pes_reg_veic = df_pessoas.groupby(['regiao', 'classe_veiculos'])[
     'pessoas'].sum().reset_index()
+
+# 3.4.2 Número de feridos por região e tipo de veículo
+df_fer_reg_veic = df_pessoas.groupby(['regiao', 'classe_veiculos'])[
+    'feridos'].sum().reset_index()
+
+# 3.4.3 Número de mortos por região e tipo de veículo
+df_mor_reg_veic = df_pessoas.groupby(['regiao', 'classe_veiculos'])[
+    'mortos'].sum().reset_index()
 
 
 # ----------------------------------------------------------------------------#
@@ -839,6 +850,37 @@ gr_an_pes_reg_vec.layout['coloraxis']['colorbar']['title'] = 'Pessoas'
 gr_an_pes_reg_vec.update_yaxes(type="category")
 gr_an_pes_reg_vec.update_xaxes(type="category")
 
+# 3.4.2 Número de feridos por região e tipo de veículo
+gr_an_fer_reg_vec = px.density_heatmap(df_fer_reg_veic,
+                                       x="regiao",
+                                       y="classe_veiculos",
+                                       z="feridos",
+                                       histfunc="sum", text_auto=True,
+                                       # labels=dict(mes="Mês"),
+                                       labels=dict(
+                                           classe_veiculos="Classe veículo",  regiao="Região"),
+                                       color_continuous_scale="RdYlBu_r", template="plotly_dark"
+                                       )
+
+gr_an_fer_reg_vec.layout['coloraxis']['colorbar']['title'] = 'Feridos'
+gr_an_fer_reg_vec.update_yaxes(type="category")
+gr_an_fer_reg_vec.update_xaxes(type="category")
+
+# 3.4.3 Número de mortos por região e tipo de veículo
+gr_an_mor_reg_vec = px.density_heatmap(df_mor_reg_veic,
+                                       x="regiao",
+                                       y="classe_veiculos",
+                                       z="mortos",
+                                       histfunc="sum", text_auto=True,
+                                       # labels=dict(mes="Mês"),
+                                       labels=dict(
+                                           classe_veiculos="Classe veículo",  regiao="Região"),
+                                       color_continuous_scale="RdYlBu_r", template="plotly_dark"
+                                       )
+
+gr_an_mor_reg_vec.layout['coloraxis']['colorbar']['title'] = 'Mortos'
+gr_an_mor_reg_vec.update_yaxes(type="category")
+gr_an_mor_reg_vec.update_xaxes(type="category")
 
 ###################################################################################################
 ###################################################################################################
@@ -1097,3 +1139,13 @@ text = """:orange[**Pessoas envolvidos por região e tipo de veículo**]"""
 
 with st.expander(text, expanded=True):
     st.plotly_chart(gr_an_pes_reg_vec, use_container_width=True)
+
+text = """:orange[**Número de feridos por região e tipo de veículo**]"""
+
+with st.expander(text, expanded=True):
+    st.plotly_chart(gr_an_fer_reg_vec, use_container_width=True)
+
+text = """:orange[**Número de mortos por região e tipo de veículo**]"""
+
+with st.expander(text, expanded=True):
+    st.plotly_chart(gr_an_mor_reg_vec, use_container_width=True)
