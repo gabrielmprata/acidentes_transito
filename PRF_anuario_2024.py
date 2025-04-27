@@ -313,6 +313,10 @@ df_prop_veicular = df_gp_veicular.melt(id_vars=["classe_veiculos"],
 df_prop_veicular['%'] = 100 * df_prop_veicular['quantidade'] / \
     df_prop_veicular.groupby('metrica')['quantidade'].transform('sum')
 
+# 3.4.1 Pessoas envolvidos por região e tipo de veículo
+df_pes_reg_veic = df_pessoas.groupby(['regiao', 'classe_veiculos'])[
+    'pessoas'].sum().reset_index()
+
 
 # ----------------------------------------------------------------------------#
 # ****************************************************************************#
@@ -818,6 +822,23 @@ gr_an_prop_vec = px.bar(df_prop_veicular.sort_values(['metrica', '%'], ascending
                         )
 gr_an_prop_vec.update_yaxes(ticksuffix="%", showgrid=True)
 
+# 3.4.1 Pessoas envolvidos por região e tipo de veículo
+gr_an_pes_reg_vec = px.density_heatmap(df_pes_reg_veic,
+                                       x="regiao",
+                                       y="classe_veiculos",
+                                       z="pessoas",
+                                       histfunc="sum", text_auto=True,
+                                       # labels=dict(mes="Mês"),
+                                       labels=dict(
+                                           classe_veiculos="Classe veículo",  regiao="Região"),
+                                       color_continuous_scale="RdYlBu_r", template="plotly_dark"
+                                       )
+
+gr_an_pes_reg_vec.layout['coloraxis']['colorbar']['title'] = 'Pessoas'
+# fig.update_traces(dict(colorscale='RdYlBu_r',showscale=True,coloraxis=None),)
+gr_an_pes_reg_vec.update_yaxes(type="category")
+gr_an_pes_reg_vec.update_xaxes(type="category")
+
 
 ###################################################################################################
 ###################################################################################################
@@ -1071,3 +1092,8 @@ text = """:orange[**Proporção de envolvidos por tipo de veículo**]"""
 
 with st.expander(text, expanded=True):
     st.plotly_chart(gr_an_prop_vec, use_container_width=True)
+
+text = """:orange[**Pessoas envolvidos por região e tipo de veículo**]"""
+
+with st.expander(text, expanded=True):
+    st.plotly_chart(gr_an_pes_reg_vec, use_container_width=True)
