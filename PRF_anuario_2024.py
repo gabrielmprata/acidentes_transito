@@ -301,6 +301,19 @@ gr_mort_veic_cond = df_pessoas[(df_pessoas['tipo_envolvido'] == 'Condutor')].gro
     'classe_veiculos'])['mortos'].sum().reset_index()
 
 
+# 3.3.9 Proporção de envolvidos por tipo de veículo
+# agrupa
+df_gp_veicular = df_pessoas.groupby('classe_veiculos')[
+    ['mortos', 'feridos_leves', 'feridos_graves', 'ilesos']].apply(lambda x: x.sum()).reset_index()
+
+df_prop_veicular = df_gp_veicular.melt(id_vars=["classe_veiculos"],
+                                       var_name="metrica",
+                                       value_name="quantidade")
+
+df_prop_veicular['%'] = 100 * df_prop_veicular['quantidade'] / \
+    df_prop_veicular.groupby('metrica')['quantidade'].transform('sum')
+
+
 # ----------------------------------------------------------------------------#
 # ****************************************************************************#
 # Construção dos Gráficos
@@ -795,7 +808,20 @@ gr_an_mort_veic_cond.update_layout(showlegend=False)
 gr_an_mort_veic_cond.update_traces(
     textposition='outside', textinfo='percent+label')
 
-#######################
+
+gr_an_prop_vec = px.bar(df_prop_veicular.sort_values(['metrica', '%'], ascending=[True, True]), x='metrica', y='%', color='classe_veiculos',
+                        labels=dict(classe_veiculos="Grupo Veicular",
+                                    metrica="Métrica"),
+                        # height=350, width=600, #altura x largura
+                        color_discrete_sequence=px.colors.sequential.Blues_r,
+                        template="plotly_dark", text="classe_veiculos"
+                        )
+gr_an_prop_vec.update_yaxes(ticksuffix="%", showgrid=True)
+
+
+###################################################################################################
+###################################################################################################
+###################################################################################################
 # Dashboard Main Panel
 
 
@@ -1039,3 +1065,9 @@ with st.expander(text, expanded=True):
 
     with col[1]:
         st.plotly_chart(gr_an_mort_veic_cond, use_container_width=True)
+
+
+text = """:orange[**Proporção de envolvidos por tipo de veículo**]"""
+
+with st.expander(text, expanded=True):
+    st.plotly_chart(gr_an_prop_vec, use_container_width=True)
