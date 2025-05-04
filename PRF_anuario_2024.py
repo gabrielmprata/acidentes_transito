@@ -328,6 +328,16 @@ df_fer_reg_veic = df_pessoas.groupby(['regiao', 'classe_veiculos'])[
 df_mor_reg_veic = df_pessoas.groupby(['regiao', 'classe_veiculos'])[
     'mortos'].sum().reset_index()
 
+# 3.4.4 Condutores envolvidos por faixa etária e tipo de veículo
+# condutor pessoas
+gr_pes_faixa_cond = df_pessoas[(df_pessoas['tipo_envolvido'] == 'Condutor')].groupby(
+    ['faixa_idade', 'classe_veiculos'])['pessoas'].sum().reset_index()
+
+# 3.4.5 Condutores mortos por faixa etária e tipo de veículo
+
+gr_mor_faixa_cond = df_pessoas[(df_pessoas['tipo_envolvido'] == 'Condutor')].groupby(
+    ['faixa_idade', 'classe_veiculos'])['mortos'].sum().reset_index()
+
 
 # ----------------------------------------------------------------------------#
 # ****************************************************************************#
@@ -882,6 +892,38 @@ gr_an_mor_reg_vec.layout['coloraxis']['colorbar']['title'] = 'Mortos'
 gr_an_mor_reg_vec.update_yaxes(type="category")
 gr_an_mor_reg_vec.update_xaxes(type="category")
 
+# 3.4.4 Condutores envolvidos por faixa etária e tipo de veículo
+gr_an_pes_faixa_cond = px.density_heatmap(gr_pes_faixa_cond,
+                                          x="faixa_idade",
+                                          y="classe_veiculos",
+                                          z="pessoas",
+                                          histfunc="sum", text_auto=True,
+                                          # labels=dict(mes="Mês"),
+                                          labels=dict(
+                                              classe_veiculos="Classe veículo",  faixa_idade="Faixa Etária"),
+                                          color_continuous_scale="RdYlBu_r", template="plotly_dark"
+                                          )
+
+gr_an_pes_faixa_cond.layout['coloraxis']['colorbar']['title'] = 'Pessoas'
+gr_an_pes_faixa_cond.update_yaxes(type="category")
+gr_an_pes_faixa_cond.update_xaxes(type="category")
+
+# 3.4.5 Condutores mortos por faixa etária e tipo de veículo
+gr_an_mor_faixa_cond = px.density_heatmap(gr_mor_faixa_cond,
+                                          x="faixa_idade",
+                                          y="classe_veiculos",
+                                          z="mortos",
+                                          histfunc="sum", text_auto=True,
+                                          # labels=dict(mes="Mês"),
+                                          labels=dict(
+                                              classe_veiculos="Classe veículo",  faixa_idade="Faixa Etária"),
+                                          color_continuous_scale="RdYlBu_r", template="plotly_dark"
+                                          )
+
+gr_an_mor_faixa_cond.layout['coloraxis']['colorbar']['title'] = 'Mortos'
+gr_an_mor_faixa_cond.update_yaxes(type="category")
+gr_an_mor_faixa_cond.update_xaxes(type="category")
+
 ###################################################################################################
 ###################################################################################################
 ###################################################################################################
@@ -1149,3 +1191,14 @@ text = """:orange[**Número de mortos por região e tipo de veículo**]"""
 
 with st.expander(text, expanded=True):
     st.plotly_chart(gr_an_mor_reg_vec, use_container_width=True)
+
+text = """:orange[**Condutores envolvidos por faixa etária e tipo de veículo**]"""
+
+with st.expander(text, expanded=True):
+    st.plotly_chart(gr_an_pes_faixa_cond, use_container_width=True)
+
+
+text = """:orange[**Condutores mortos por faixa etária e tipo de veículo**]"""
+
+with st.expander(text, expanded=True):
+    st.plotly_chart(gr_an_mor_faixa_cond, use_container_width=True)
