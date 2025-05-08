@@ -338,6 +338,9 @@ gr_pes_faixa_cond = df_pessoas[(df_pessoas['tipo_envolvido'] == 'Condutor')].gro
 gr_mor_faixa_cond = df_pessoas[(df_pessoas['tipo_envolvido'] == 'Condutor')].groupby(
     ['faixa_idade', 'classe_veiculos'])['mortos'].sum().reset_index()
 
+# 3.4.6 Pedestres envolvidos por faixa etária e estado
+gr_pedestre_faixa = df_pessoas[(df_pessoas['tipo_envolvido'] == 'Pedestre')].groupby([
+    'faixa_idade', 'uf'])['pessoas'].sum().reset_index()
 
 # ----------------------------------------------------------------------------#
 # ****************************************************************************#
@@ -924,6 +927,22 @@ gr_an_mor_faixa_cond.layout['coloraxis']['colorbar']['title'] = 'Mortos'
 gr_an_mor_faixa_cond.update_yaxes(type="category")
 gr_an_mor_faixa_cond.update_xaxes(type="category")
 
+# 3.4.6 Pedestres envolvidos por faixa etária e estado
+gr_an_pes_uf_faixa = px.density_heatmap(gr_pedestre_faixa,
+                                        x="uf",
+                                        y="faixa_idade",
+                                        z="pessoas",
+                                        histfunc="sum", text_auto=True,
+                                        # labels=dict(mes="Mês"),
+                                        labels=dict(
+                                            uf="UF",  faixa_idade="Faixa Etária"),
+                                        color_continuous_scale="RdYlBu_r", template="plotly_dark"
+                                        )
+
+gr_an_pes_uf_faixa.layout['coloraxis']['colorbar']['title'] = 'Pessoas'
+gr_an_pes_uf_faixa.update_yaxes(type="category")
+gr_an_pes_uf_faixa.update_xaxes(type="category")
+
 ###################################################################################################
 ###################################################################################################
 ###################################################################################################
@@ -1202,3 +1221,8 @@ text = """:orange[**Condutores mortos por faixa etária e tipo de veículo**]"""
 
 with st.expander(text, expanded=True):
     st.plotly_chart(gr_an_mor_faixa_cond, use_container_width=True)
+
+text = """:orange[**Pedestres envolvidos por faixa etária e estado**]"""
+
+with st.expander(text, expanded=True):
+    st.plotly_chart(gr_an_pes_uf_faixa, use_container_width=True)
