@@ -12,7 +12,7 @@ Cerca de 84% dos acidentes de trânsito nas rodovias federais brasileiras, são 
 
 # :floppy_disk: Coleta de Dados
 >
-Os dados foram coletados do sítio da Polícia Rodoviária Federal.
+Os dados foram coletados do sítio da Polícia Rodoviária Federal (PRF).
 <img align="left" width="80" height="94" src="https://github.com/gabrielmprata/MVP_Sprint01_Puc_Rio/assets/119508139/f9646e84-d274-406b-9a7a-12add19acb07">
 >
 https://www.gov.br/prf/pt-br/acesso-a-informacao/dados-abertos/dados-abertos-acidentes
